@@ -155,7 +155,7 @@ textarea{min-height:55px;resize:vertical;}
 
 <script>
 const BIN_ID = '6a292fd3f5f4af5e29d71fdf';
-const API_KEY = '$2a$10$PZYWJmlxL1eu2H1cv4X3MuLs4Hb1Gmg2s/Cm.qBFWklD4cjhD.tIq';
+const API_KEY = '$2a$10$kp1j4dwXa/jq6LT6ut1y4.r063oADJvs8kNnGSlTuGDScSG2B1IMy';
 const BIN_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
 const TCSS = {Handysize:'hs',Ultramax:'um',Kamsarmax:'km',Capesize:'cp'};
@@ -224,7 +224,10 @@ async function saveToBin() {
       },
       body: JSON.stringify({ entries: data, nextId })
     });
-    if (!r.ok) throw new Error('PUT failed: ' + r.status);
+    if (!r.ok) {
+      const txt = await r.text();
+      throw new Error('PUT ' + r.status + ': ' + txt);
+    }
     const el = document.getElementById('saveStatus');
     el.textContent = '✓ Saved & synced';
     setTimeout(() => el.textContent = '', 3000);
