@@ -257,7 +257,20 @@ async function apiPost(body) {
 
 // ── Sort helpers ──────────────────────────────────────────────────────────────
 function dKey(s){if(!s)return 999999;const mo={january:1,february:2,march:3,april:4,may:5,june:6,july:7,august:8,september:9,october:10,november:11,december:12};const l=s.toLowerCase(),y=(l.match(/\d{4}/)||['9999'])[0]*1;if(/1h/.test(l))return y*100+1;if(/2h/.test(l))return y*100+2;if(/1q/.test(l))return y*100+1;if(/2q/.test(l))return y*100+4;if(/3q/.test(l))return y*100+7;if(/4q/.test(l))return y*100+10;for(const[n,v]of Object.entries(mo))if(l.includes(n))return y*100+v;return y*100;}
-function rKey(s){if(!s)return 999999;const mo={january:1,february:2,march:3,april:4,may:5,june:6,july:7,august:8,september:9,october:10,november:11,december:12};const l=s.toLowerCase(),y=(l.match(/\d{4}/)||['9999'])[0]*1;const m=Object.entries(mo).find(([n])=>l.includes(n));return y*100+(m?m[1]:0);}
+function rKey(s){
+  if(!s)return 999999;
+  // Handle DD/MMM/YYYY e.g. "30/Apr/2026"
+  const dmy = s.match(/(\d{1,2})\/([A-Za-z]{3})\/(\d{4})/);
+  if(dmy){
+    const mo={jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12};
+    return parseInt(dmy[3])*10000 + (mo[dmy[2].toLowerCase()]||0)*100 + parseInt(dmy[1]);
+  }
+  // Handle "April 2026" style
+  const mo={january:1,february:2,march:3,april:4,may:5,june:6,july:7,august:8,september:9,october:10,november:11,december:12};
+  const l=s.toLowerCase(),y=(l.match(/\d{4}/)||['9999'])[0]*1;
+  const m=Object.entries(mo).find(([n])=>l.includes(n));
+  return y*10000+(m?m[1]:0)*100;
+}
 function gv(e,col){if(col==='type')return TORD[e.type]||9;if(col==='delivery')return dKey(e.delivery);if(col==='reported')return rKey(e.reported);if(col==='status')return{Fixed:1,Rumored:2,Failed:3}[e.status]||9;return(e[col]||'').toLowerCase();}
 function sortBy(col){sortDir=sortCol===col?-sortDir:1;sortCol=col;document.querySelectorAll('th').forEach(t=>{t.classList.remove('sorted');const s=t.querySelector('.si');if(s)s.textContent='↕';});const th=document.getElementById('th-'+col);if(th){th.classList.add('sorted');th.querySelector('.si').textContent=sortDir===1?'↑':'↓';}render();}
 
