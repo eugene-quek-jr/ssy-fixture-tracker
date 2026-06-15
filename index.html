@@ -183,7 +183,7 @@ const SEED=[
   {id:17,owner:"Sugahara Kaiun",vessel:"Onomichi 40K",type:"Handysize",delivery:"2H 2028",charterer:"M/Maritime",rate:"USD 13,500",period:"5 years",reported:"",status:"Rumored",ssy:false,pnc:false,broker:"",remarks:"M/Maritime bid — lost out to SSY/UOT deal."},
 ];
 
-let data=[], nextId=200, sortCol='type', sortDir=1, editId=null, PW='';
+let data=[], nextId=200, sortCol='reported', sortDir=-1, editId=null, PW='';
 let selectMode=false, hiddenIds=new Set();
 
 function checkPw(){
@@ -257,6 +257,11 @@ function filtered(){const q=document.getElementById('qSearch').value.toLowerCase
 function x(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
 function render(){
+  // Set sort indicator on initial render
+  document.querySelectorAll('th').forEach(t=>{t.classList.remove('sorted');const s=t.querySelector('.si');if(s)s.textContent='↕';});
+  const th=document.getElementById('th-'+sortCol);
+  if(th){th.classList.add('sorted');th.querySelector('.si').textContent=sortDir===1?'↑':'↓';}
+
   const rows=filtered().sort((a,b)=>{const av=gv(a,sortCol),bv=gv(b,sortCol);if(av<bv)return -sortDir;if(av>bv)return sortDir;return dKey(a.delivery)-dKey(b.delivery);});
   const scMap={Fixed:'tag-fixed',Failed:'tag-fail',Rumored:'tag-rumor'};
   const tbody=document.getElementById('tbody');
